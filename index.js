@@ -4,7 +4,7 @@ const randomAdjective = require('./getAdjective');
 const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
 
 (async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ product: 'chrome', executablePath: '/usr/bin/chromium-browser'});
     const page = await browser.newPage();
 
     await page.goto('https://cohost.org/rc/login');
