@@ -4,8 +4,7 @@ const randomAdjective = require('./getAdjective');
 const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
 
 (async () => {
-    //remove executablePath below if not on raspberry pi
-    const browser = await puppeteer.launch({ executablePath: '/usr/share/applications/chromium-browser' });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     await page.goto('https://cohost.org/rc/login');
