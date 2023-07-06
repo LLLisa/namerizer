@@ -70,31 +70,10 @@ const logFile = './namerizer_log.txt';
         ? `Cohost display name changed to ${newDisplayName}`
         : 'Display name unchanged, check error log';
 
-    // const date = new Date();
-    // const options = {
-    //   timeZone: 'America/New_York',
-    //   // Use the following options to customize the output format:
-    //   year: 'numeric',
-    //   month: '2-digit',
-    //   day: '2-digit',
-    //   hour: '2-digit',
-    //   minute: '2-digit',
-    //   second: '2-digit',
-    // };
-
-    // const logDateTime = date.toLocaleString('en-US', options).replace(/\s/g, '');
-
-    // fs.appendFile('./namerizer_log.txt', `${logDateTime}: ${logMess}` + '\n', (err) => {
-    //   if (err) throw err;
-    //   console.log(logMess);
-    // });
-
     await logOut(logFile, logMess);
-
     await browser.close();
   } catch (error) {
     await logOut(logFile, error);
-
     console.log(error);
   }
 })();

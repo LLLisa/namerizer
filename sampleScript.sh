@@ -13,7 +13,6 @@ npm_pid=$!
 echo "$npm_pid running" >> ~/crontab_log.txt
 
 wait $npm_pid >> ~/crontab_log.txt
-sleep 90
 
 NOW=$(date)
 echo "$NOW namerizer completed" >> ~/crontab_log.txt
