@@ -5,10 +5,11 @@ const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
 
 (async () => {
     try {
-        //this line for raspbian
+        //---this line for raspbian---
         const browser = await puppeteer.launch({ product: 'chrome', executablePath: '/usr/bin/chromium-browser' });
-        //this line for other linux
-        // const browser = await puppeteer.launch();
+        //---this line for other linux---
+        // const browser = await puppeteer.launch({ headless: false });
+
         const page = await browser.newPage();
 
         await page.goto('https://cohost.org/rc/login');
@@ -43,8 +44,19 @@ const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
         await page.select('select', 'roundrect');
         await saveChangesButton.click();
 
+        await page.waitForNavigation({
+            waitUntil: 'networkidle2',
+        });
+
+        const newUrl = await page.url();
+
+        if (newUrl !== 'https://cohost.org/rc/project/edit') {
+            console.log(`Cohost display name changed to ${newDisplayName}`);
+        } else {
+            console.log('Display name unchanged, check error log');
+        }
+
         await browser.close();
-        console.log(`Cohost display name changed to ${newDisplayName}`);
     } catch (error) {
         console.log(error);
     }
