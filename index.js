@@ -5,43 +5,47 @@ const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
 
 (async () => {
     try {
-    
-    const browser = await puppeteer.launch({ product: 'chrome', executablePath: '/usr/bin/chromium-browser'});
-    const page = await browser.newPage();
+        //this line for raspbian
+        const browser = await puppeteer.launch({ product: 'chrome', executablePath: '/usr/bin/chromium-browser' });
+        //this line for other linux
+        // const browser = await puppeteer.launch();
+        const page = await browser.newPage();
 
-    await page.goto('https://cohost.org/rc/login');
+        await page.goto('https://cohost.org/rc/login');
 
-    const emailInput = await page.$('input[type="email"]');
-    const passwordInput = await page.$('input[type="password"]');
-    const loginSubmitButton = await page.$('button[type="submit"]');
+        const emailInput = await page.$('input[type="email"]');
+        const passwordInput = await page.$('input[type="password"]');
+        const loginSubmitButton = await page.$('button[type="submit"]');
 
-    await emailInput.type(COHOST_EMAIL);
-    await passwordInput.type(COHOST_PW);
-    await loginSubmitButton.click();
+        await emailInput.type(COHOST_EMAIL);
+        await passwordInput.type(COHOST_PW);
+        await loginSubmitButton.click();
 
-    await page.waitForNavigation({
-        waitUntil: 'networkidle2',
-    });
+        await page.waitForNavigation({
+            waitUntil: 'networkidle2',
+        });
 
-    await page.goto('https://cohost.org/rc/project/edit', {
-        waitUntil: 'networkidle2',
-    });
+        await page.goto('https://cohost.org/rc/project/edit', {
+            waitUntil: 'networkidle2',
+        });
 
-    const newDisplayName = `${randomAdjective} dolphin`;
+        const newDisplayName = `${randomAdjective} dolphin`;
 
-    const displayNameInput = await page.$('input');
-    await displayNameInput.click({ clickCount: 3 });
-    await displayNameInput.press('Backspace');
-    await displayNameInput.type(newDisplayName);
+        const displayNameInput = await page.$('input');
+        await displayNameInput.click({ clickCount: 3 });
+        await displayNameInput.press('Backspace');
+        await displayNameInput.type(newDisplayName);
 
-    const saveChangesButton = await page.$('button[type="submit"]');
-    await saveChangesButton.click();
+        const saveChangesButton = await page.$('button[type="submit"]');
+        await saveChangesButton.click();
 
-    await browser.close();
-    console.log(`Cohost display name changed to ${newDisplayName}`);
-    
-} catch (error) {
- console.log(error)       
-}
+        //these two lines are accounting for a bug that has been reported
+        await page.select('select', 'roundrect');
+        await saveChangesButton.click();
 
+        await browser.close();
+        console.log(`Cohost display name changed to ${newDisplayName}`);
+    } catch (error) {
+        console.log(error);
+    }
 })();
