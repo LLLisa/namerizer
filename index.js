@@ -4,6 +4,8 @@ const randomAdjective = require('./getAdjective');
 const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
 
 (async () => {
+    try {
+    
     const browser = await puppeteer.launch({ product: 'chrome', executablePath: '/usr/bin/chromium-browser'});
     const page = await browser.newPage();
 
@@ -37,4 +39,9 @@ const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
 
     await browser.close();
     console.log(`Cohost display name changed to ${newDisplayName}`);
+    
+} catch (error) {
+ console.log(error)       
+}
+
 })();
