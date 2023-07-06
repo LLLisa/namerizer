@@ -1,63 +1,100 @@
 const puppeteer = require('puppeteer');
 const randomAdjective = require('./getAdjective');
+const { logOut } = require('./logger');
 
 const { COHOST_EMAIL, COHOST_PW } = require('./SECRETS');
+const logFile = './namerizer_log.txt';
 
 (async () => {
-    try {
-        //---this line for raspbian---
-        const browser = await puppeteer.launch({ product: 'chrome', executablePath: '/usr/bin/chromium-browser' });
-        //---this line for other linux---
-        // const browser = await puppeteer.launch({ headless: false });
+  try {
+    //---this line for raspbian---
+    const browser = await puppeteer.launch({
+      product: 'chrome',
+      executablePath: '/usr/bin/chromium-browser',
+    });
+    //---this line for other linux---
+    // const browser = await puppeteer.launch({ headless: false });
 
-        const page = await browser.newPage();
+    const page = await browser.newPage();
 
-        await page.goto('https://cohost.org/rc/login');
+    console.log('started');
 
-        const emailInput = await page.$('input[type="email"]');
-        const passwordInput = await page.$('input[type="password"]');
-        const loginSubmitButton = await page.$('button[type="submit"]');
+    await page.goto('https://cohost.org/rc/login');
 
-        await emailInput.type(COHOST_EMAIL);
-        await passwordInput.type(COHOST_PW);
-        await loginSubmitButton.click();
+    const emailInput = await page.$('input[type="email"]');
+    const passwordInput = await page.$('input[type="password"]');
+    const loginSubmitButton = await page.$('button[type="submit"]');
 
-        await page.waitForNavigation({
-            waitUntil: 'networkidle2',
-        });
+    await emailInput.type(COHOST_EMAIL);
+    await passwordInput.type(COHOST_PW);
+    await loginSubmitButton.click();
 
-        await page.goto('https://cohost.org/rc/project/edit', {
-            waitUntil: 'networkidle2',
-        });
+    console.log('logged in');
 
-        const newDisplayName = `${randomAdjective} dolphin`;
+    await page.waitForNavigation({
+      waitUntil: 'networkidle2',
+    });
 
-        const displayNameInput = await page.$('input');
-        await displayNameInput.click({ clickCount: 3 });
-        await displayNameInput.press('Backspace');
-        await displayNameInput.type(newDisplayName);
+    await page.goto('https://cohost.org/rc/project/edit', {
+      waitUntil: 'networkidle2',
+    });
 
-        const saveChangesButton = await page.$('button[type="submit"]');
-        await saveChangesButton.click();
+    const newDisplayName = `${randomAdjective} dolphin`;
 
-        //these two lines are accounting for a bug that has been reported
-        await page.select('select', 'roundrect');
-        await saveChangesButton.click();
+    const displayNameInput = await page.$('input');
+    await displayNameInput.click({ clickCount: 3 });
+    await displayNameInput.press('Backspace');
+    await displayNameInput.type(newDisplayName);
 
-        await page.waitForNavigation({
-            waitUntil: 'networkidle2',
-        });
+    console.log('dispaly name typed');
 
-        const newUrl = await page.url();
+    const saveChangesButton = await page.$('button[type="submit"]');
+    await saveChangesButton.click();
 
-        if (newUrl !== 'https://cohost.org/rc/project/edit') {
-            console.log(`Cohost display name changed to ${newDisplayName}`);
-        } else {
-            console.log('Display name unchanged, check error log');
-        }
+    //these two lines are accounting for a bug that has been reported
+    await page.select('select', 'roundrect');
+    await saveChangesButton.click();
 
-        await browser.close();
-    } catch (error) {
-        console.log(error);
-    }
+    console.log('display name entered');
+
+    await page.waitForNavigation({
+      waitUntil: 'networkidle2',
+    });
+
+    const newUrl = await page.url();
+
+    console.log('finished');
+
+    const logMess =
+      newUrl !== 'https://cohost.org/rc/project/edit'
+        ? `Cohost display name changed to ${newDisplayName}`
+        : 'Display name unchanged, check error log';
+
+    // const date = new Date();
+    // const options = {
+    //   timeZone: 'America/New_York',
+    //   // Use the following options to customize the output format:
+    //   year: 'numeric',
+    //   month: '2-digit',
+    //   day: '2-digit',
+    //   hour: '2-digit',
+    //   minute: '2-digit',
+    //   second: '2-digit',
+    // };
+
+    // const logDateTime = date.toLocaleString('en-US', options).replace(/\s/g, '');
+
+    // fs.appendFile('./namerizer_log.txt', `${logDateTime}: ${logMess}` + '\n', (err) => {
+    //   if (err) throw err;
+    //   console.log(logMess);
+    // });
+
+    await logOut(logFile, logMess);
+
+    await browser.close();
+  } catch (error) {
+    await logOut(logFile, error);
+
+    console.log(error);
+  }
 })();
