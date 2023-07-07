@@ -17,8 +17,6 @@ const logFile = './namerizer_log.txt';
 
     const page = await browser.newPage();
 
-    console.log('started');
-
     await page.goto('https://cohost.org/rc/login');
 
     const emailInput = await page.$('input[type="email"]');
@@ -28,8 +26,6 @@ const logFile = './namerizer_log.txt';
     await emailInput.type(COHOST_EMAIL);
     await passwordInput.type(COHOST_PW);
     await loginSubmitButton.click();
-
-    console.log('logged in');
 
     await page.waitForNavigation({
       waitUntil: 'networkidle2',
@@ -46,8 +42,6 @@ const logFile = './namerizer_log.txt';
     await displayNameInput.press('Backspace');
     await displayNameInput.type(newDisplayName);
 
-    console.log('dispaly name typed');
-
     const saveChangesButton = await page.$('button[type="submit"]');
     await saveChangesButton.click();
 
@@ -55,15 +49,11 @@ const logFile = './namerizer_log.txt';
     await page.select('select', 'roundrect');
     await saveChangesButton.click();
 
-    console.log('display name entered');
-
     await page.waitForNavigation({
       waitUntil: 'networkidle2',
     });
 
     const newUrl = await page.url();
-
-    console.log('finished');
 
     const logMess =
       newUrl !== 'https://cohost.org/rc/project/edit'
