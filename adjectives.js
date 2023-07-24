@@ -71,6 +71,7 @@ module.exports = [
     'austere',
     'authentic',
     'authorized',
+    'autistic',
     'automatic',
     'automated',
     'autonomous',
