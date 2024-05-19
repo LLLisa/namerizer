@@ -8,12 +8,12 @@ const logFile = './namerizer_log.txt';
 (async () => {
   try {
     //---this line for raspbian---
-    const browser = await puppeteer.launch({
-      product: 'chrome',
-      executablePath: '/usr/bin/chromium-browser',
-    });
+    // const browser = await puppeteer.launch({
+    //   product: 'chrome',
+    //   executablePath: '/usr/bin/chromium-browser',
+    // });
     //---this line for other linux---
-    // const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
 
     const page = await browser.newPage();
 
